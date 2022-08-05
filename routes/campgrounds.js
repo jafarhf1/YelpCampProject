@@ -38,7 +38,6 @@ router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, nex
 router.get('/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id).populate('reviews');
-    console.log(campground)
     if (!campground) {
         req.flash('error', 'Cannot find that campground!');
         return res.redirect('/campgrounds') //res.redirect doesn't end the execution of the line below it so we need to add return
