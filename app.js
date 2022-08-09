@@ -6,7 +6,8 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const session = require('express-session');
+const session = require('express-session')
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
@@ -20,9 +21,9 @@ const helmet = require('helmet');
 const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
-
-
-mongoose.connect('mongodb://localhost:27017/yelp-camp-practice')
+const dbUrl = 'mongodb://localhost:27017/yelp-camp-practice';
+// process.env.DB_URL
+mongoose.connect(dbUrl)
     .then(() => {
         console.log('Database connected')
     })
@@ -41,6 +42,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize());
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    secret: 'thisshouldbeabettersecret!',
+    touchAfter: 24 * 60 * 60
+
+})
 
 const sessionConfig = {
     name: 'session',
